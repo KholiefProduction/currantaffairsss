@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychology and Economics Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffb3d9, #d6a6f7, #b3e0ff);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #3b3b3b;
+            margin-bottom: 20px;
+        }
+        .intro-text {
+            font-size: 22px;
+            color: #3b3b3b;
+            margin-bottom: 20px;
+        }
+        .start-button {
+            background-color: #ff80bf;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .start-button:hover {
+            background-color: #ff4d94;
+        }
+        .quit-button {
+            background-color: #b3c6ff;
+            border: none;
+            color: white;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .quit-button:hover {
+            background-color: #80b3ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Currant Affairs Quiz</h1>
+    <div class="intro-text">
+      ANA HAS2AT TEREREERY ANA HAS2AT TEREREERY
+    </div>
+    <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+    <button class="quit-button" onclick="quitQuiz()">Quit</button>
+</div>
+
+<script>
+    // Function to start the quiz
+    function startQuiz() {
+        window.location.href = "quiz.html"; // Redirect to quiz.html
+    }
+
+    // Function to quit the quiz
+    function quitQuiz() {
+        window.location.href = "about:blank"; // Close the page
+    }
+</script>
+
+</body>
+</html>

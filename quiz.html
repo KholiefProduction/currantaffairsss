@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychology and Economics Quiz</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> <!-- Confetti library -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffb3d9, #d6a6f7, #b3e0ff);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        h1 {
+            color: #3b3b3b;
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .question-container {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .answer-button {
+            background-color: #ff80bf;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            width: 80%;
+        }
+        .answer-button:hover {
+            background-color: #ff4d94;
+        }
+        .quit-button {
+            background-color: #b3c6ff;
+            border: none;
+            color: white;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .quit-button:hover {
+            background-color: #80b3ff;
+        }
+        .question-number, .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .banner {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #ffccff;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4d4d4d;
+            display: none;
+            z-index: 999;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Currant Affairs Quiz</h1>
+
+    <div class="banner" id="banner"></div>
+
+    <div id="quiz-container" class="question-container">
+        <div class="question-number" id="question-number">Question 1 of 50</div>
+        <div class="question-text" id="question-text">What is psychology?</div>
+        <button class="answer-button" onclick="checkAnswer(1)">The study of the brain</button>
+        <button class="answer-button" onclick="checkAnswer(0)">The study of behavior and the mind</button>
+        <button class="answer-button" onclick="checkAnswer(0)">A medical field for mental health</button>
+        <button class="answer-button" onclick="checkAnswer(0)">A part of biology</button>
+    </div>
+
+    <div class="score" id="score">Score: 0</div>
+    <button class="quit-button" onclick="quitQuiz()">Quit</button>
+
+    <script>
+        // Confetti animation
+        function triggerConfetti() {
+            confetti({
+                spread: 180,
+                startVelocity: 30,
+                elementCount: 200,
+                dragFriction: 0.1,
+                duration: 3000,
+                shapes: ['square', 'circle'],
+                colors: ['#ff80bf', '#b3c6ff', '#ffccff']
+            });
+        }
+
+        // Question and answer data
+        const questions = [
+            { question: "What is psychology?", answers: [
+                { text: "The study of the brain", correct: false },
+                { text: "The study of behavior and the mind", correct: true },
+                { text: "A medical field for mental health", correct: false },
+                { text: "A part of biology", correct: false }
+            ]},
+            { question: "What is the scientific method?", answers: [
+                { text: "A series of random steps", correct: false },
+                { text: "A structured approach to research", correct: true },
+                { text: "Only used in psychology", correct: false },
+                { text: "Just a theory", correct: false }
+            ]},
+            { question: "What is scarcity in economics?", answers: [
+                { text: "An abundance of resources", correct: false },
+                { text: "The lack of resources to meet needs", correct: true },
+                { text: "A type of trade", correct: false },
+                { text: "A theory in economics", correct: false }
+            ]},
+            { question: "What is a primary research method?", answers: [
+                { text: "Surveying existing articles", correct: false },
+                { text: "Collecting new data", correct: true },
+                { text: "Reading books", correct: false },
+                { text: "Watching documentaries", correct: false }
+            ]},
+            { question: "What does GDP stand for?", answers: [
+                { text: "Global Development Process", correct: false },
+                { text: "Gross Domestic Product", correct: true },
+                { text: "General Distribution Price", correct: false },
+                { text: "Gross Data Product", correct: false }
+            ]},
+            { question: "Which is a major principle of behavioral psychology?", answers: [
+                { text: "Conditioning", correct: true },
+                { text: "Dream analysis", correct: false },
+                { text: "Rationalization", correct: false },
+                { text: "Cognitive dissonance", correct: false }
+            ]},
+            { question: "What does the term 'economics' mean?", answers: [
+                { text: "The study of government", correct: false },
+                { text: "The study of trade and wealth", correct: true },
+                { text: "The study of environmental factors", correct: false },
+                { text: "The study of natural resources", correct: false }
+            ]},
+            { question: "Which of the following is a basic economic problem?", answers: [
+                { text: "Scarcity", correct: true },
+                { text: "High taxes", correct: false },
+                { text: "High wages", correct: false },
+                { text: "Deflation", correct: false }
+            ]},
+            { question: "Which theory is associated with Sigmund Freud?", answers: [
+                { text: "Cognitive theory", correct: false },
+                { text: "Behavioral theory", correct: false },
+                { text: "Psychoanalytic theory", correct: true },
+                { text: "Humanistic theory", correct: false }
+            ]},
+            { question: "In economics, what does a 'market' refer to?", answers: [
+                { text: "A physical store", correct: false },
+                { text: "A system of trade and exchange", correct: true },
+                { text: "A government building", correct: false },
+                { text: "A group of people", correct: false }
+            ]},
+            { question: "What is the law of demand in economics?", answers: [
+                { text: "As price increases, demand increases", correct: false },
+                { text: "As price decreases, demand increases", correct: true },
+                { text: "As price increases, supply decreases", correct: false },
+                { text: "As demand increases, supply decreases", correct: false }
+            ]},
+            { question: "What does Maslow's hierarchy of needs show?", answers: [
+                { text: "Basic needs are not important", correct: false },
+                { text: "The importance of self-actualization", correct: true },
+                { text: "The idea of conditioning", correct: false },
+                { text: "Theories of motivation", correct: false }
+            ]},
+            { question: "What is a positive externality in economics?", answers: [
+                { text: "A cost imposed on others", correct: false },
+                { text: "A benefit experienced by others", correct: true },
+                { text: "A form of taxation", correct: false },
+                { text: "The negative impact of a policy", correct: false }
+            ]},
+            { question: "What is the main focus of cognitive psychology?", answers: [
+                { text: "Behavioral conditioning", correct: false },
+                { text: "Mental processes such as memory and problem solving", correct: true },
+                { text: "Human motivation", correct: false },
+                { text: "Environmental factors", correct: false }
+            ]},
+            { question: "What is inflation?", answers: [
+                { text: "A decrease in prices", correct: false },
+                { text: "A rise in the general price level", correct: true },
+                { text: "A rise in wages", correct: false },
+                { text: "A decrease in wages", correct: false }
+            ]},
+            { question: "Which of the following is an example of classical conditioning?", answers: [
+                { text: "Teaching a dog to fetch", correct: false },
+                { text: "Pavlov's dogs salivating at the sound of a bell", correct: true },
+                { text: "Teaching a child to tie their shoes", correct: false },
+                { text: "Learning to ride a bike", correct: false }
+            ]},
+            { question: "What is the central focus of economics?", answers: [
+                { text: "How people make decisions", correct: true },
+                { text: "How societies handle crime", correct: false },
+                { text: "How people create art", correct: false },
+                { text: "How political systems function", correct: false }
+            ]},
+            { question: "What is the main goal of psychology?", answers: [
+                { text: "To understand and change behavior", correct: true },
+                { text: "To study animal behavior", correct: false },
+                { text: "To understand the brain", correct: false },
+                { text: "To learn about the history of psychology", correct: false }
+            ]},
+            { question: "What is an example of a negative externality?", answers: [
+                { text: "Pollution from a factory", correct: true },
+                { text: "Education funding", correct: false },
+                { text: "A free public park", correct: false },
+                { text: "Community gardens", correct: false }
+            ]},
+            { question: "Which of the following is a characteristic of a free market economy?", answers: [
+                { text: "Government ownership of resources", correct: false },
+                { text: "Private ownership of resources", correct: true },
+                { text: "Controlled pricing by the government", correct: false },
+                { text: "Centralized planning by the state", correct: false }
+            ]},
+            { question: "What does the term 'opportunity cost' refer to?", answers: [
+                { text: "The benefit gained from making a choice", correct: false },
+                { text: "The cost of the next best alternative forgone", correct: true },
+                { text: "The money paid to employees", correct: false },
+                { text: "The total revenue earned", correct: false }
+            ]},
+            { question: "What is the main goal of behavioral economics?", answers: [
+                { text: "To understand the brain's structure", correct: false },
+                { text: "To combine psychological insights with economic theory", correct: true },
+                { text: "To analyze government policies", correct: false },
+                { text: "To predict the stock market", correct: false }
+            ]},
+            { question: "Which of the following is a feature of market equilibrium?", answers: [
+                { text: "Supply exceeds demand", correct: false },
+                { text: "Demand exceeds supply", correct: false },
+                { text: "Quantity supplied equals quantity demanded", correct: true },
+                { text: "Government intervention is required", correct: false }
+            ]},
+            { question: "What is the concept of 'supply and demand'?", answers: [
+                { text: "The relationship between buyers and sellers", correct: true },
+                { text: "The interaction of government and markets", correct: false },
+                { text: "The value of a currency", correct: false },
+                { text: "A tax on products", correct: false }
+            ]},
+            { question: "What is neuroplasticity?", answers: [
+                { text: "The brain's inability to change", correct: false },
+                { text: "The brain's ability to adapt and form new connections", correct: true },
+                { text: "A rigid brain structure", correct: false },
+                { text: "Brain inflammation", correct: false }
+            ]},
+            { question: "What does 'operant conditioning' involve?", answers: [
+                { text: "Learning through observation", correct: false },
+                { text: "Learning through rewards and punishments", correct: true },
+                { text: "Learning by instinct", correct: false },
+                { text: "Learning through classical conditioning", correct: false }
+            ]}
+			{ question: "What is the placebo effect?", answers: [
+				{ text: "The effect of a real drug", correct: false },
+				{ text: "The effect of a non-active substance due to belief", correct: true },
+				{ text: "A physical side effect of medication", correct: false },
+				{ text: "An allergic reaction to medication", correct: false }
+			]},
+			{ question: "What is the term 'cognitive dissonance'?", answers: [
+				{ text: "The discomfort of holding conflicting beliefs", correct: true },
+				{ text: "The ability to adapt to new information", correct: false },
+				{ text: "The tendency to follow group behavior", correct: false },
+				{ text: "The effect of social influence on decisions", correct: false }
+			]},
+			{ question: "What does the term 'ethnography' refer to in research?", answers: [
+				{ text: "A method of studying brain activity", correct: false },
+				{ text: "A qualitative research method involving direct observation", correct: true },
+				{ text: "A survey technique for gathering data", correct: false },
+				{ text: "A test to measure intelligence", correct: false }
+			]},
+			{ question: "What is a major factor in the development of psychological disorders?", answers: [
+				{ text: "Socioeconomic status", correct: true },
+				{ text: "Amount of sleep", correct: false },
+				{ text: "Number of friends", correct: false },
+				{ text: "Genetics", correct: false }
+			]},
+			{ question: "What is operant conditioning?", answers: [
+				{ text: "Learning based on observation", correct: false },
+				{ text: "Learning through reinforcement and punishment", correct: true },
+				{ text: "Learning through association", correct: false },
+				{ text: "Learning by trial and error", correct: false }
+			]},
+			{ question: "Which of the following best describes Freud's unconscious mind?", answers: [
+				{ text: "It is filled with memories we are aware of", correct: false },
+				{ text: "It is the part of the mind that influences behavior unconsciously", correct: true },
+				{ text: "It is irrelevant to human behavior", correct: false },
+				{ text: "It is a purely rational thought process", correct: false }
+			]},
+			{ question: "What is the main principle of the humanistic approach in psychology?", answers: [
+				{ text: "The importance of reinforcement and punishment", correct: false },
+				{ text: "The focus on self-actualization and personal growth", correct: true },
+				{ text: "The study of learned behaviors", correct: false },
+				{ text: "The focus on unconscious conflicts", correct: false }
+			]},
+			{ question: "What is the term for a mental health professional who can prescribe medication?", answers: [
+				{ text: "Psychologist", correct: false },
+				{ text: "Psychiatrist", correct: true },
+				{ text: "Social worker", correct: false },
+				{ text: "Counselor", correct: false }
+			]},
+			{ question: "What is the focus of behavioral psychology?", answers: [
+				{ text: "The study of dreams", correct: false },
+				{ text: "The study of observable behavior", correct: true },
+				{ text: "The study of emotions", correct: false },
+				{ text: "The study of consciousness", correct: false }
+			]},
+			{ question: "What is classical conditioning?", answers: [
+				{ text: "Learning through rewards and punishment", correct: false },
+				{ text: "Learning by associating two stimuli", correct: true },
+				{ text: "Learning by observing others", correct: false },
+				{ text: "Learning by trial and error", correct: false }
+			]},
+			{ question: "What is the concept of 'nature vs. nurture' in psychology?", answers: [
+				{ text: "The argument that behavior is influenced only by environment", correct: false },
+				{ text: "The argument that behavior is influenced by genetic inheritance and environment", correct: true },
+				{ text: "The idea that behavior is a result of instinct", correct: false },
+				{ text: "The belief that behavior is random", correct: false }
+			]},
+			{ question: "What is the most widely used research method in psychology?", answers: [
+				{ text: "Experimental research", correct: true },
+				{ text: "Case studies", correct: false },
+				{ text: "Survey research", correct: false },
+				{ text: "Naturalistic observation", correct: false }
+			]},
+			{ question: "What is the role of the prefrontal cortex?", answers: [
+				{ text: "Regulates emotions", correct: false },
+				{ text: "Involved in decision-making and higher-level thinking", correct: true },
+				{ text: "Controls motor functions", correct: false },
+				{ text: "Processes visual information", correct: false }
+			]},
+			{ question: "What is the meaning of 'confirmation bias'?", answers: [
+				{ text: "The tendency to ignore contradictory evidence", correct: true },
+				{ text: "The ability to recall all information equally", correct: false },
+				{ text: "The tendency to seek out new information", correct: false },
+				{ text: "The ability to accept new beliefs easily", correct: false }
+			]},
+			{ question: "Which of the following is an example of cognitive psychology?", answers: [
+				{ text: "Studying unconscious motives", correct: false },
+				{ text: "Studying memory and problem-solving", correct: true },
+				{ text: "Studying conditioned responses", correct: false },
+				{ text: "Studying facial expressions", correct: false }
+			]},
+			{ question: "What does the term 'anchoring bias' refer to?", answers: [
+				{ text: "Overestimating the impact of a past experience", correct: false },
+				{ text: "The tendency to rely heavily on the first piece of information encountered", correct: true },
+				{ text: "The inability to make decisions in stressful situations", correct: false },
+				{ text: "The ability to change beliefs based on new information", correct: false }
+			]},
+			{ question: "What is the 'fight or flight' response?", answers: [
+				{ text: "A response to stress that prepares the body for physical action", correct: true },
+				{ text: "A mental response to confusion", correct: false },
+				{ text: "A relaxation technique for reducing stress", correct: false },
+				{ text: "A response to boredom", correct: false }
+			]},
+			{ question: "What is a defense mechanism in psychology?", answers: [
+				{ text: "A way of protecting the body from illness", correct: false },
+				{ text: "A mental strategy for coping with stress or anxiety", correct: true },
+				{ text: "A method of controlling behavior in social settings", correct: false },
+				{ text: "A biological process that limits the effects of trauma", correct: false }
+			]},
+			{ question: "What is 'mirror neuron' activity?", answers: [
+				{ text: "The brain's ability to reflect images", correct: false },
+				{ text: "The brain's response to observing others' actions", correct: true },
+				{ text: "The brain's capacity to store memories", correct: false },
+				{ text: "The brain's function in motor coordination", correct: false }
+			]},
+			{ question: "What does 'social psychology' focus on?", answers: [
+				{ text: "The study of behavior in groups and social situations", correct: true },
+				{ text: "The study of brain functions", correct: false },
+				{ text: "The study of individual personality traits", correct: false },
+				{ text: "The study of animal behavior", correct: false }
+			]},
+			{ question: "What is 'self-actualization' in Maslow's hierarchy?", answers: [
+				{ text: "Achieving personal growth and realizing one's potential", correct: true },
+				{ text: "Meeting basic survival needs", correct: false },
+				{ text: "Receiving love and support from others", correct: false },
+				{ text: "Seeking material wealth", correct: false }
+			]},
+			{ question: "What is 'groupthink'?", answers: [
+				{ text: "The tendency of individuals to follow their own beliefs", correct: false },
+				{ text: "The tendency of group members to prioritize harmony over critical thinking", correct: true },
+				{ text: "The process of decision-making in large organizations", correct: false },
+				{ text: "The effect of outside influence on group behavior", correct: false }
+			]},
+			{ question: "What does the 'halo effect' describe?", answers: [
+				{ text: "A cognitive bias where one positive trait influences overall judgment", correct: true },
+				{ text: "The tendency to judge others based on their background", correct: false },
+				{ text: "The impact of physical attractiveness on perception", correct: false },
+				{ text: "The tendency to overlook positive traits in others", correct: false }
+			]},
+			{ question: "What is 'social loafing'?", answers: [
+				{ text: "The tendency to work harder when others are present", correct: false },
+				{ text: "The tendency to contribute less effort in a group task", correct: true },
+				{ text: "The act of sharing tasks evenly within a group", correct: false },
+				{ text: "The tendency to avoid group activities", correct: false }
+			]},
+			{ question: "What is the bystander effect?", answers: [
+				{ text: "The tendency to help others in distress", correct: false },
+				{ text: "The tendency for people to avoid responsibility in emergencies when others are present", correct: true },
+				{ text: "The tendency to intervene in a crisis", correct: false },
+				{ text: "The effect of positive reinforcement on behavior", correct: false }
+			]},
+			{ question: "What is 'cognitive restructuring'?", answers: [
+				{ text: "Changing unhealthy thought patterns to healthier ones", correct: true },
+				{ text: "The ability to think logically", correct: false },
+				{ text: "The act of reinforcing behaviors through rewards", correct: false },
+				{ text: "The capacity to adapt to new environments", correct: false }
+			]},
+			{ question: "What is cognitive dissonance?", answers: [
+				{ text: "A sense of comfort when holding conflicting beliefs", correct: false },
+				{ text: "The discomfort of holding conflicting beliefs", correct: true },
+				{ text: "The ability to ignore contradictory evidence", correct: false },
+				{ text: "The tendency to seek confirmation of beliefs", correct: false }
+			]},
+			{ question: "Which of the following is an example of an intrinsic motivator?", answers: [
+				{ text: "Receiving a bonus for meeting goals", correct: false },
+				{ text: "Enjoying an activity for its own sake", correct: true },
+				{ text: "Getting promoted at work", correct: false },
+				{ text: "Completing a task to avoid punishment", correct: false }
+			]},
+			{ question: "What does the concept of 'mental set' refer to?", answers: [
+				{ text: "The ability to think outside the box", correct: false },
+				{ text: "The tendency to approach problems in a habitual way", correct: true },
+				{ text: "The inability to learn new information", correct: false },
+				{ text: "The ability to memorize information quickly", correct: false }
+			]},
+			{ question: "What is a cognitive bias?", answers: [
+				{ text: "A rational and logical way of thinking", correct: false },
+				{ text: "A systematic pattern of deviation from norm or rationality", correct: true },
+				{ text: "A fixed pattern of thought without any external influence", correct: false },
+				{ text: "The ability to make decisions without errors", correct: false }
+			]}
+		];
+
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Load the next question
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById("question-text").innerText = question.question;
+            document.getElementById("question-number").innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+            const buttons = document.querySelectorAll(".answer-button");
+            question.answers.forEach((answer, index) => {
+                buttons[index].innerText = answer.text;
+                buttons[index].onclick = function () {
+                    checkAnswer(answer.correct);
+                };
+            });
+        }
+
+        // Check the answer
+        function checkAnswer(isCorrect) {
+            if (isCorrect) {
+                score++;
+            }
+
+            document.getElementById("score").innerText = `Score: ${score}`;
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                alert("Quiz completed! You scored " + score + " out of " + questions.length);
+                triggerConfetti(); // Show confetti when quiz ends
+            }
+        }
+
+        // Quit quiz
+        function quitQuiz() {
+            alert("You quit the quiz. Your score is " + score + " out of " + questions.length);
+        }
+
+        // Initialize quiz
+        loadQuestion();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
+</body>
